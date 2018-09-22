@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
+import marked from 'marked';
 import './App.css';
 
 class Editor extends Component {
   constructor(props) {
     super(props);
-    this.state = {code: "My name is Ryszard"};
+    this.state = {code: "### My headline"};
   }
   render() {
     return(
@@ -13,8 +14,31 @@ class Editor extends Component {
     );
   }
 }
-class App extends Component {
+
+class View extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { document: '### My headline'};
+  }
   render() {
+    return(
+      <div className="view"> {marked(this.state.document)}</div>
+    );
+  }
+}
+
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = { code: ''};
+  }
+  handleChange(e) {
+    this.setState({code: e.target.innerHTML});
+  }
+  render() {
+    const code = this.state.code;
     return (
       <div className="App">
         <header className="App-header">
@@ -23,8 +47,7 @@ class App extends Component {
         <div class="wrapper">
           <SplitPane split="vertical" defaultSize="50%">
             <Editor />
-            <div className="view">
-            </div>
+            <View />
           </SplitPane>
         </div>
       </div>
