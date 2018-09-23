@@ -6,48 +6,48 @@ import './App.css';
 class Editor extends Component {
   constructor(props) {
     super(props);
-    this.state = {code: "### My headline"};
+    this.updateCode = this.updateCode.bind(this);
+  }
+  updateCode(event) {
+    const text = event.target.value;
+    this.props.onChange(text);
   }
   render() {
     return(
-      <textarea id="editor-textarea">{this.state.code}</textarea>
+      <textarea id="editor-textarea" onChange={this.updateCode}></textarea>
     );
   }
 }
 
-class View extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { document: '### My headline'};
+class View extends React.Component {
+  getMarkdown(md){
+    return { __html: marked(md.toString(),{sanitize: true})}
   }
   render() {
     return(
-      <div className="view"> {marked(this.state.document)}</div>
+      <div id="view" className="view" dangerouslySetInnerHTML={this.getMarkdown(this.props.markdownSrc)}></div>
     );
   }
 }
-
-
 class App extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.state = { code: ''};
+    this.state = { markdownSrc: '# Lorem ipsum'};
   }
-  handleChange(e) {
-    this.setState({code: e.target.innerHTML});
+  handleChange(md){
+    this.setState({ markdownSrc: md });
   }
   render() {
-    const code = this.state.code;
     return (
       <div className="App">
         <header className="App-header">
           <h1 className="App-title">Markdown live editor</h1>
         </header>
-        <div class="wrapper">
-          <SplitPane split="vertical" defaultSize="50%">
-            <Editor />
-            <View />
+        <div>
+          <SplitPane className="wrapper" split="vertical" defaultSize="50%">
+            <Editor value={this.state.markdownSrc} onChange={this.handleChange}/>
+            <View markdownSrc={this.state.markdownSrc} />
           </SplitPane>
         </div>
       </div>
